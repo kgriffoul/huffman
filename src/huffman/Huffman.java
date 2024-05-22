@@ -153,9 +153,12 @@ public class Huffman {
         System.out.println(encodedLines);
     }
 
-    public static void decode(File file) {
+    public static void decode(File file, HashMap<Character, String> map) {
 
-        HashMap<Character, String> map = prefixCode(createTree(countFrequency(file)));
+        /* CODE TEMPORAIRE */
+    	map = prefixCode(createTree(countFrequency(file)));
+    	/*******************/
+    	
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<String> encodedLines = new ArrayList<>();
         encodedLines.add("01101011010110001100011000110001100");
@@ -187,31 +190,31 @@ public class Huffman {
 
     public static void main(String[] args) {
         File file = new File("test.txt");
-//        var t = countFrequency(file);
-        LinkedHashMap<Character, Double> t = new LinkedHashMap<>();
-        t.put('a', 0.02d);
-        t.put('b', 0.05d);
-        t.put('c', 0.07d);
-        t.put('d', 0.1d);
-        t.put('e', 0.1d);
-        t.put('f', 0.2d);
-        t.put('g', 0.2d);
+        var t = countFrequency(file);
+        //LinkedHashMap<Character, Double> t = new LinkedHashMap<>();
+        //t.put('a', 0.02d);
+        //t.put('b', 0.05d);
+        //t.put('c', 0.07d);
+        //t.put('d', 0.1d);
+        //t.put('e', 0.1d);
+        //t.put('f', 0.2d);
+        //t.put('g', 0.2d);
 
 
         t.forEach((cle, valeur) -> System.out.println("Clé : " + cle + ", Valeur : " + valeur));
 
         Node node = createTree(t);
+//
+//        System.out.println(node.getFrequency());
+//        System.out.println(node.getLeftNode().getFrequency() + " " + node.getRightNode().getFrequency());
+//        System.out.println(node.getLeftNode().getLeftNode().getFrequency() + " " + node.getLeftNode().getRightNode().getFrequency());
+//
+//        System.out.println(node.getRightNode().getLeftNode().getFrequency());
+//        System.out.println(node.getRightNode().getLeftNode().getLeftNode().getFrequency() + " " + node.getRightNode().getLeftNode().getRightNode().getFrequency());
+//        System.out.println(node.getRightNode().getRightNode().getFrequency());
 
-        System.out.println(node.getFrequency());
-        System.out.println(node.getLeftNode().getFrequency() + " " + node.getRightNode().getFrequency());
-        System.out.println(node.getLeftNode().getLeftNode().getFrequency() + " " + node.getLeftNode().getRightNode().getFrequency());
 
-        System.out.println(node.getRightNode().getLeftNode().getFrequency());
-        System.out.println(node.getRightNode().getLeftNode().getLeftNode().getFrequency() + " " + node.getRightNode().getLeftNode().getRightNode().getFrequency());
-        System.out.println(node.getRightNode().getRightNode().getFrequency());
-
-
-        System.out.println(Node.printTree(node));
+//        System.out.println(Node.printTree(node));
         HashMap<Character, String> mapp;
         mapp = prefixCode(node);
         System.out.println(mapp);
