@@ -7,26 +7,38 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Huffman {
+	
+	private final File file;
+	private HashMap<Character, String> tree;
+	
+	public Huffman(String path) {
+		this.file = new File(path);
+		tree = prefixCode(createTree(countFrequency(file)));
+	}
+	
+	public Huffman(String path, HashMap<Character, String> tree) {
+		this.file = new File(path);
+		this.tree = tree;
+	}
 
     /**
      * Generates a frequency table of each character from a text file
      * @param file the file to read
      * @return a frequency dictionary, sorted in ascending order
      */
-    public static LinkedHashMap<Character, Double> countFrequency(File file) {
+    public LinkedHashMap<Character, Double> countFrequency(File file) {
 
         HashMap<Character, Double> frequencyMap = new HashMap<>();
         int charNumber = 0;
 
         // creates a dictionary with the occurrence of each character
-        for (String line : file.read()) {
-            for (int i = 0; i < line.length(); i++) {
+        String line = file.read();
+        for (int i = 0; i < line.length(); i++) {
 
-                charNumber++; // count all characters
+            charNumber++; // count all characters
 
-                Character character = line.charAt(i);
-                frequencyMap.put(character, frequencyMap.containsKey(character) ? frequencyMap.get(character) + 1 : 1);
-            }
+            Character character = line.charAt(i);
+            frequencyMap.put(character, frequencyMap.containsKey(character) ? frequencyMap.get(character) + 1 : 1);
         }
 
         // transforms occurrences into frequencies by dividing by the total number of characters
@@ -61,7 +73,7 @@ public class Huffman {
      * @param frequencyMap the map of frequencies
      * @return the root node of the Huffman tree
      */
-    public static Node createTree(LinkedHashMap<Character, Double> frequencyMap) {
+    public Node createTree(LinkedHashMap<Character, Double> frequencyMap) {
         Iterator<Entry<Character, Double>> iterator = frequencyMap.entrySet().iterator();
         Entry<Character, Double> first = iterator.next();
         Entry<Character, Double> second = iterator.next();
@@ -70,7 +82,7 @@ public class Huffman {
         return createTree(new Node(second.getKey(), second.getValue()), new Node(first.getKey(), first.getValue()), frequencyMap);
     }
 
-    private static Node createTree(Node left, Node right, LinkedHashMap<Character, Double> frequencyMap) {
+    private Node createTree(Node left, Node right, LinkedHashMap<Character, Double> frequencyMap) {
 
         /* stop recursion if there is 1 or 0 element in the list */
         if (frequencyMap.size() <= 1) {
@@ -109,7 +121,7 @@ public class Huffman {
      * @param right the right node
      * @return a new node
      */
-    public static Node mergeNode(Node left, Node right) {
+    public Node mergeNode(Node left, Node right) {
         Node newNode = new Node(null, left.getFrequency() + right.getFrequency());
         newNode.setLeftNode(left);
         newNode.setRightNode(right);
@@ -124,13 +136,13 @@ public class Huffman {
      * Modifies the map passed in parameter so that it contains the character prefix code
      * @param node the root of the tree
      */
-    public static HashMap<Character, String> prefixCode(Node node) {
+    public HashMap<Character, String> prefixCode(Node node) {
         HashMap<Character, String> map = new HashMap<>();
         prefixCode(map, node, "");
         return map;
     }
 
-    private static void prefixCode(HashMap<Character, String> map, Node node, String str) {
+    private void prefixCode(HashMap<Character, String> map, Node node, String str) {
         if (node.isLeave()) {
             map.put(node.getValue(), str);
         } else {
@@ -139,41 +151,31 @@ public class Huffman {
         }
     }
 
-    public static void encode(File file) {
-        HashMap<Character, String> map = prefixCode(createTree(countFrequency(file)));
-
-        List<String> lines = file.read();
-        ArrayList<String> encodedLines = new ArrayList<>();
-        for (int i = 0; i < lines.size(); i++)  {
-            encodedLines.add("");
-            for (char c : lines.get(i).toCharArray()) {
-                encodedLines.set(i, encodedLines.get(i) + map.get(c));
-            }
+    public void encode(File outputFile) {
+        String lines = this.file.read();
+        String encodedLines = "";
+        for (int i = 0; i < lines.length(); i++)  {
+        	char c = lines.charAt(i);
+            encodedLines += this.tree.get(c);
         }
+        
+        // write in file
+        outputFile.binaryWrite(encodedLines);
+        
         System.out.println(encodedLines);
     }
 
-    public static void decode(File file, HashMap<Character, String> map) {
+    public void decode() {
 
-        /* CODE TEMPORAIRE */
-    	map = prefixCode(createTree(countFrequency(file)));
-    	/*******************/
-    	
-        ArrayList<String> lines = new ArrayList<>();
-        ArrayList<String> encodedLines = new ArrayList<>();
-        encodedLines.add("01101011010110001100011000110001100");
-        encodedLines.add("011101110111011101110111011101000100010001000100010001000100010001000101010101010101010101010101010101010101");
-        encodedLines.add("000000000000000000000000000000000000000000000000000000000000001001001001001001001001001001");
-        encodedLines.add("00100100100100100100100100100111111111111111111111111111");
-        for (int i = 0; i < encodedLines.size(); i++)  {
-            lines.add("");
-            String suite = "";
-            for (char c : encodedLines.get(i).toCharArray()) {
-                suite += c;
-                if (map.containsValue(suite)) {
-                    lines.set(i, lines.get(i) + getKeyFromValue(map, suite));
-                    suite = "";
-                }
+        String lines = "";
+//        String encodedLines = "00000000000000001000000100010000000000111100011000010000000010100000000001000000100010000011100100000000000000000110110000011001001011000011000000010100001011010100000000011000001000000110000011110101000000011000000000000000011000000000010000000000000100010001100000000010011000000001011000000100000000000000001100001111000110001111000110000101000000011110101001100010000000000011011000010000011000001001000000001010000000000110110100000101101010000001000110101101100100000000000001110000000111101010000001111000011010000000010000000100000000000000100010001110010001000110000000001111000110000100000000101000110001100000011000001000010110001100001001010000000011000001000000110000000001001100000000100001100000100001101010000000111110000000000110000010000000000000000000110110000000010110000000100000001000000000000111110000110110000000001100110000111110000000001000010001101001001100011000010100100010000011100001011010100000000010000001000100000000000000010000000000000001000001111010100110000011110000110100000000000000011000000100000001000000000000000000001010000000000101100110001111100001011010100000010000110000100000000000000000001000110001001010000000110000000000100000000001000000100100000000000100101001000100000111000010110101000000000010000100110001100000001100000000111101000000001000000010000000000000010001011100000000111101010000011000001000110101000000011111000010000000000001001100000000000000000000011001000001100000001010000001101100010011000000110000110000010001100001001010110000101000000000110000010000110000101100100000000000001100000001000000010000000000001101100110100101100011000010100000000001000110000101100100101100000111100011000010100001011001000001101010000000001000001101100011000000111101010011001100010110101000000000001100010011000110000000110000000011110100000001000000000000000010000001000000110000011111000000011110101001100000000011001100001100000100001101010000010000011011000000000000000000001100011110000111000000000000000000000101000000001100000000000000000000010000010000000000010100000001100000000000101100100000000000001100000000000000110000001000000010000000000000000101110000000000110000010000000000000000000110110000000010110010000011100110011000100000000000100000000101000000001100000100000011000001111100011000101011010000010100000000010011001000000001100000000111110110000101000000000011110010000101110000000000000011000000100000000000011001000110000000101000011011000000001000100000000000000000010000011111001000111000000000001111011001000000001010000000000000100010000000000001000110001010110100000101000000001100000100000011001100000000000010001011101100001010000100110011000000111000000000000001100000010000000000001100000000000100010000111001100000000100110000000111110010000001000011100000000000111100000001110011000000000111100000001110001000011100000000000110000110000000000000000000000000010110000000000000000001000000000100010110010000101100000001000000010000000000001100000000000100110010000010000011111000000110011000001111000000010101100011100000000000110000010001100001001100011000010000000010100001000000000000100011000110000000000000010001100001100000111110000000000000100010001110000000000110000010000100110011000010100000000000000110000001000000010000000000001111100000000000000001100000100000000000000000010000010111011010000010100101100000110000000000110001001100000000001100010111001100101000000000010000011001100011000000011111000000011110101000011001000000000001011010000000100000000000000100010001110000000001101100011000010111000010011100000101100000110000000001000000000000000000110000101110110000101001011100000110011000010100000001111100001000000000000100110000110000000110000000011110000111000000000000000000000001000000100000000000000000000110000000000001100110001000000000001010010001000001110000101110010000001000010100110010100000011001100010001111001010000000111101010000000001100100000000000101101000000001000000010000000000000000010110101001100110001011010100000001111100000000010000000000010011000110000101000010000000000001011000001100000000010000000000000000001100000001100000000111100011000010100000001111100000011011000011000000011000000001111000011000000000000001100000010";
+        String encodedLines = file.binaryRead();
+        String suite = "";
+        for (int i = 0; i < encodedLines.length(); i++)  {
+            suite += encodedLines.charAt(i);
+            if (this.tree.containsValue(suite)) {
+                lines += getKeyFromValue(this.tree, suite);
+                suite = "";
             }
         }
         System.out.println(lines);
@@ -189,21 +191,21 @@ public class Huffman {
     }
 
     public static void main(String[] args) {
-        File file = new File("test.txt");
-        var t = countFrequency(file);
-        //LinkedHashMap<Character, Double> t = new LinkedHashMap<>();
-        //t.put('a', 0.02d);
-        //t.put('b', 0.05d);
-        //t.put('c', 0.07d);
-        //t.put('d', 0.1d);
-        //t.put('e', 0.1d);
-        //t.put('f', 0.2d);
-        //t.put('g', 0.2d);
-
-
-        t.forEach((cle, valeur) -> System.out.println("Clé : " + cle + ", Valeur : " + valeur));
-
-        Node node = createTree(t);
+//        File file = new File("test.txt");
+////        var t = countFrequency(file);
+//        LinkedHashMap<Character, Double> t = new LinkedHashMap<>();
+//        t.put('a', 0.02d);
+//        t.put('b', 0.05d);
+//        t.put('c', 0.07d);
+//        t.put('d', 0.1d);
+//        t.put('e', 0.1d);
+//        t.put('f', 0.2d);
+//        t.put('g', 0.2d);
+//
+//
+//        t.forEach((cle, valeur) -> System.out.println("Clé : " + cle + ", Valeur : " + valeur));
+//
+//        Node node = createTree(t);
 //
 //        System.out.println(node.getFrequency());
 //        System.out.println(node.getLeftNode().getFrequency() + " " + node.getRightNode().getFrequency());
@@ -212,14 +214,20 @@ public class Huffman {
 //        System.out.println(node.getRightNode().getLeftNode().getFrequency());
 //        System.out.println(node.getRightNode().getLeftNode().getLeftNode().getFrequency() + " " + node.getRightNode().getLeftNode().getRightNode().getFrequency());
 //        System.out.println(node.getRightNode().getRightNode().getFrequency());
-
-
-//        System.out.println(Node.printTree(node));
-        HashMap<Character, String> mapp;
-        mapp = prefixCode(node);
-        System.out.println(mapp);
-
-        //encode(file);
-        //decode(file);
+//
+//
+////        System.out.println(Node.printTree(node));
+//        HashMap<Character, String> mapp;
+//        mapp = prefixCode(node);
+//        System.out.println(mapp);
+//
+//        encode(file);
+//        decode(file, null);
+    	
+    	Huffman testEncode = new Huffman("test.txt");
+    	testEncode.encode(new File("test.bin"));
+    	
+    	Huffman testDecode = new Huffman("test.bin", new Huffman("test.txt").tree);
+    	testDecode.decode();
     }
 }
