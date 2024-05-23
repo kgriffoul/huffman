@@ -13,7 +13,7 @@ public class Huffman {
 	
 	public Huffman(String path) {
 		this.file = new File(path);
-		tree = prefixCode(createTree(countFrequency(file)));
+		tree = prefixCode(createTree(countFrequency()));
 	}
 	
 	public Huffman(String path, HashMap<Character, String> tree) {
@@ -26,7 +26,7 @@ public class Huffman {
      * @param file the file to read
      * @return a frequency dictionary, sorted in ascending order
      */
-    public LinkedHashMap<Character, Double> countFrequency(File file) {
+    public LinkedHashMap<Character, Double> countFrequency() {
 
         HashMap<Character, Double> frequencyMap = new HashMap<>();
         int charNumber = 0;

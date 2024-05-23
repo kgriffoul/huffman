@@ -69,8 +69,8 @@ public class File {
             }
 
             // Limiter la chaîne binaire à la taille lue
-//            String binaryString = binaryStringBuilder.substring(0, tailleDeLaChaine);
-            System.out.println(tailleDeLaChaine);
+            String binaryString = binaryStringBuilder.substring(0, tailleDeLaChaine);
+//            System.out.println(tailleDeLaChaine);
             System.out.println("Contenu binaire du fichier:");
             System.out.println(binaryStringBuilder.toString());
             System.out.println("Lecture du fichier terminée.");
