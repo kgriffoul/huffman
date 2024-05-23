@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,9 +50,15 @@ public class File {
     public String binaryRead() {
     	try (FileInputStream inputStream = new FileInputStream(getPath())) {
             // Lire la taille de la chaîne binaire (en nombre de bits)
-    		System.out.println(inputStream.read());
-    		System.out.println(inputStream.read());
-            int tailleDeLaChaine = inputStream.read();
+    		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4);
+    	    // ints are 32 bit, 4 bytes
+    	    byteBuffer.put((byte)inputStream.read());
+    	    byteBuffer.put((byte)inputStream.read());
+    	    byteBuffer.put((byte)inputStream.read());
+    	    byteBuffer.put((byte)inputStream.read());
+    	    // put the bytes in right order to read int
+    	    byteBuffer.flip();
+    	    int tailleDeLaChaine = byteBuffer.getInt();
 
             // Lire les données binaires 
             StringBuilder binaryStringBuilder = new StringBuilder();
@@ -81,7 +88,9 @@ public class File {
 
             // Écrire la taille de la chaîne binaire (en nombre de bits)
             System.out.println(binaryString.length());
-            outputStream.write(binaryString.length());
+//            outputStream.write(binaryString.length());
+            byte[] length = ByteBuffer.allocate(4).putInt(binaryString.length()).array();
+            outputStream.write(length);
 
             // Écrire les données binaires dans le fichier
             outputStream.write(byteArray);

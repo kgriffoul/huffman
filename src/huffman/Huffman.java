@@ -227,7 +227,7 @@ public class Huffman {
     	Huffman testEncode = new Huffman("test.txt");
     	testEncode.encode(new File("test.bin"));
     	
-    	Huffman testDecode = new Huffman("test.bin", new Huffman("test.txt").tree);
+    	Huffman testDecode = new Huffman("test.bin", testEncode.tree);
     	testDecode.decode();
     }
 }
