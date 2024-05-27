@@ -2,6 +2,7 @@ package huffman.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -47,58 +48,50 @@ public class File {
 
     public void write() {}
     
-    public String binaryRead() {
-    	try (FileInputStream inputStream = new FileInputStream(getPath())) {
-            // Lire la taille de la chaîne binaire (en nombre de bits)
-    		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4);
-    	    // ints are 32 bit, 4 bytes
-    	    byteBuffer.put((byte)inputStream.read());
-    	    byteBuffer.put((byte)inputStream.read());
-    	    byteBuffer.put((byte)inputStream.read());
-    	    byteBuffer.put((byte)inputStream.read());
-    	    // put the bytes in right order to read int
-    	    byteBuffer.flip();
-    	    int tailleDeLaChaine = byteBuffer.getInt();
+    public String binaryRead() throws IOException {
+		FileInputStream inputStream = new FileInputStream(getPath());
+        // Lire la taille de la chaîne binaire (en nombre de bits)
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4);
+	    // ints are 32 bit, 4 bytes
+	    byteBuffer.put((byte)inputStream.read());
+	    byteBuffer.put((byte)inputStream.read());
+	    byteBuffer.put((byte)inputStream.read());
+	    byteBuffer.put((byte)inputStream.read());
+	    // put the bytes in right order to read int
+	    byteBuffer.flip();
+	    int tailleDeLaChaine = byteBuffer.getInt();
 
-            // Lire les données binaires 
-            StringBuilder binaryStringBuilder = new StringBuilder();
-            int data;
-            while ((data = inputStream.read()) != -1) {
-                String binaryByte = String.format("%8s", Integer.toBinaryString(data & 0xFF)).replace(' ', '0');
-                binaryStringBuilder.append(binaryByte);
-            }
-
-            // Limiter la chaîne binaire à la taille lue
-            String binaryString = binaryStringBuilder.substring(0, tailleDeLaChaine);
-//            System.out.println(tailleDeLaChaine);
-            System.out.println("Contenu binaire du fichier:");
-            System.out.println(binaryStringBuilder.toString());
-            System.out.println("Lecture du fichier terminée.");
-            return binaryStringBuilder.toString();
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage()); 
-            return null;
+        // Lire les données binaires 
+        StringBuilder binaryStringBuilder = new StringBuilder();
+        int data;
+        while ((data = inputStream.read()) != -1) {
+            String binaryByte = String.format("%8s", Integer.toBinaryString(data & 0xFF)).replace(' ', '0');
+            binaryStringBuilder.append(binaryByte);
         }
+
+        // Limiter la chaîne binaire à la taille lue
+        String binaryString = binaryStringBuilder.substring(0, tailleDeLaChaine);
+//        System.out.println("Contenu binaire du fichier:");
+//        System.out.println(binaryStringBuilder.toString());
+//        System.out.println("Lecture du fichier terminée.");
+        return binaryStringBuilder.toString();
     }
     
-    public void binaryWrite(String binaryString) {
-        try (FileOutputStream outputStream = new FileOutputStream(getPath())) {
-            // Convertir la chaîne binaire en tableau de bytes
-            byte[] byteArray = convertBinaryStringToByteArray(binaryString);
+    public void binaryWrite(String binaryString) throws IOException {
+    	FileOutputStream outputStream = new FileOutputStream(getPath());
+    	// Convertir la chaîne binaire en tableau de bytes
+        byte[] byteArray = convertBinaryStringToByteArray(binaryString);
 
-            // Écrire la taille de la chaîne binaire (en nombre de bits)
-            System.out.println(binaryString.length());
+        // Écrire la taille de la chaîne binaire (en nombre de bits)
+        System.out.println(binaryString.length());
 //            outputStream.write(binaryString.length());
-            byte[] length = ByteBuffer.allocate(4).putInt(binaryString.length()).array();
-            outputStream.write(length);
+        byte[] length = ByteBuffer.allocate(4).putInt(binaryString.length()).array();
+        outputStream.write(length);
 
-            // Écrire les données binaires dans le fichier
-            outputStream.write(byteArray);
+        // Écrire les données binaires dans le fichier
+        outputStream.write(byteArray);
 
-            System.out.println("Données binaires écrites dans le fichier avec succès.");
-        } catch (IOException e) {
-            System.err.println("Erreur lors de l'écriture des données binaires dans le fichier : " + e.getMessage());
-        }
+//        System.out.println("Données binaires écrites dans le fichier avec succès.");
     }
     
     /**
