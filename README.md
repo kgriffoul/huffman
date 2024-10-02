@@ -1,0 +1,36 @@
+<h1>Description du projet</h1>
+<h2>Objectifs du projet :</h2> 
+
+<p>Durant ce projet, nous devions réaliser un programme java de compression/décompression de fichier texte grâce à l'arborescensse de huffman</p>
+
+<h2>Contributeurs de cette SAÉ :</h2>
+  <table border="1">
+    <tr>
+      <th>Nom prénom</th>
+      <th>Adresse mail</th>
+      <th>Login GitHub</th>
+    </tr>
+    <tr>
+      <td>Cazor--Bonnet Adrian</td>
+      <td>adrian.cazor--bonnet@iut-rodez.fr</td>
+      <td>CAZORBONNETAdrian</td>
+    </tr>
+    <tr>
+      <td>Chesnier Quentin</td>
+      <td>quentin.chesnier@iut-rodez.fr</td>
+      <td>qchesnier</td>
+    </tr>
+    <tr>
+      <td>Juery Clément</td>
+      <td>clement.juery@iut-rodez.fr</td>
+      <td>cju3ry</td>
+    </tr>
+    <tr>
+      <td>Griffoul Kélian</td>  
+      <td>kelian.griffoul@iut-rodez.fr</td>  
+      <td>kgriffoul</td>          
+      </tr>
+  </table>
+<br>
+  Drive : <br>
+    https://drive.google.com/drive/folders/1gS8l9UbUGu54KAUvV5sjZ_MVGth5dX3B?usp=sharing
